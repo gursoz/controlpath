@@ -1,0 +1,2 @@
+# mycontrolpath
+a controlpath submodule
