@@ -1,8 +1,35 @@
 defaultTasks 'build'
 
-task build(type:Exec) {
-  workingDir '.'
+@CacheableTask
+abstract class TridentBuild extends DefaultTask {
 
-  //on linux
-  commandLine './build/build.sh'
+   // The actual action to perform the build
+    @TaskAction
+    void build() {
+        doBuild()
+    }
+
+    @InputDirectory
+    abstract DirectoryProperty getSrcInputDir()
+
+    @InputDirectory
+    abstract DirectoryProperty getTestInputDir()
+
+    @OutputDirectory
+    abstract DirectoryProperty getOutputDir()
+
+    def doBuild() {
+        project.exec {
+          workingDir '.'
+	  commandLine './build/build.sh'
+        }
+    }
 }
+
+task build(type: TridentBuild) {
+  description 'Builds bedrock by invoking build.sh'
+  srcInputDir = file('/home/cyc/Test/learngit/gitmodule/parentrepo/controlpath/src/main/java/com/dell/controlpath')
+  testInputDir = file('/home/cyc/Test/learngit/gitmodule/parentrepo/controlpath/src/test/java/com/dell/controlpath')
+  outputDir = file('./output')
+}
+
