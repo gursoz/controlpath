@@ -1,3 +1,5 @@
+defaultTasks 'build'
+
 task build(type:Exec) {
   workingDir '.'
 
