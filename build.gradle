@@ -1,0 +1,6 @@
+task build(type:Exec) {
+  workingDir '.'
+
+  //on linux
+  commandLine './build/build.sh'
+}
