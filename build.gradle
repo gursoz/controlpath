@@ -1,4 +1,4 @@
-defaultTasks 'build'
+defaultTasks 'mybuild'
 
 @CacheableTask
 abstract class TridentBuild extends DefaultTask {
@@ -26,9 +26,9 @@ abstract class TridentBuild extends DefaultTask {
     }
 }
 
-task build(type: TridentBuild) {
-  description 'Builds bedrock by invoking build.sh'
-  dependsOn ':bedrock:build'
+task mybuild(type: TridentBuild) {
+  description 'Builds controlpath by invoking build.sh'
+  dependsOn ':bedrock:mybuild'
   srcInputDir = file('/home/cyc/Test/learngit/gitmodule/parentrepo/controlpath/src/main/java/com/dell/controlpath')
   testInputDir = file('/home/cyc/Test/learngit/gitmodule/parentrepo/controlpath/src/test/java/com/dell/controlpath')
   outputDir = file('./output')
