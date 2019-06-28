@@ -1,7 +1,12 @@
-defaultTasks 'mybuild'
+project.defaultTasks 'mybuild'
+
+dependencies  {
+  files('/home/cyc/Test/learngit/gitmodule/parentrepo/bedrock/output/buildTime')
+}
 
 @CacheableTask
 abstract class TridentBuild extends DefaultTask {
+   def File buildIndicator
 
    // The actual action to perform the build
     @TaskAction
@@ -13,11 +18,15 @@ abstract class TridentBuild extends DefaultTask {
     abstract DirectoryProperty getSrcInputDir()
 
     @InputDirectory
+    abstract DirectoryProperty getBedrockSrcDir()
+
+    @InputDirectory
     abstract DirectoryProperty getTestInputDir()
 
     @OutputDirectory
     abstract DirectoryProperty getOutputDir()
 
+    
     def doBuild() {
         project.exec {
           workingDir '.'
@@ -26,11 +35,12 @@ abstract class TridentBuild extends DefaultTask {
     }
 }
 
+
 task mybuild(type: TridentBuild) {
   description 'Builds controlpath by invoking build.sh'
   dependsOn ':bedrock:mybuild'
   srcInputDir = file('/home/cyc/Test/learngit/gitmodule/parentrepo/controlpath/src/main/java/com/dell/controlpath')
   testInputDir = file('/home/cyc/Test/learngit/gitmodule/parentrepo/controlpath/src/test/java/com/dell/controlpath')
+  bedrockSrcDir = file('/home/cyc/Test/learngit/gitmodule/parentrepo/bedrock/src/')
   outputDir = file('./output')
 }
-
