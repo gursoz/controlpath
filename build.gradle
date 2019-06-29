@@ -6,12 +6,21 @@ dependencies  {
 
 @CacheableTask
 abstract class TridentBuild extends DefaultTask {
-   def File buildIndicator
+   Boolean forceBuild = null
 
    // The actual action to perform the build
     @TaskAction
     void build() {
         doBuild()
+    }
+
+    @Input
+    Map<String,String> getInputProperties() {
+       def inputMap = [:]
+       if(forceBuild==true) {
+          inputMap['timestamp'] = LocalDateTime.now().toString()
+       }
+       return inputMap
     }
 
     @InputDirectory
@@ -26,7 +35,12 @@ abstract class TridentBuild extends DefaultTask {
     @OutputDirectory
     abstract DirectoryProperty getOutputDir()
 
+    @Option( option = 'force', description = 'Build even if not stale in cache. Will build all tasks on which this task is dependent')
+    void setForceBuild(final Boolean ignoreVal) {
+       forceBuild = true
+    }
     
+
     def doBuild() {
         project.exec {
           workingDir '.'
