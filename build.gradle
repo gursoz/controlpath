@@ -4,6 +4,14 @@ dependencies  {
   files('/home/cyc/Test/learngit/gitmodule/parentrepo/bedrock/output/buildTime')
 }
 
+task myprebuild {
+  inputs.files('/home/cyc/Test/learngit/gitmodule/parentrepo/bedrock/src/')
+  doLast {
+    mybuild.enabled = true
+  }
+}
+    
+
 @CacheableTask
 abstract class TridentBuild extends DefaultTask {
    Boolean forceBuild = null
@@ -35,11 +43,15 @@ abstract class TridentBuild extends DefaultTask {
     @OutputDirectory
     abstract DirectoryProperty getOutputDir()
 
-    @Option( option = 'force', description = 'Build even if not stale in cache. Will build all tasks on which this task is dependent')
+    @Option( option = 'force', description = 'Build even if not stale in cache. Will force build only this repo')
     void setForceBuild(final Boolean ignoreVal) {
        forceBuild = true
     }
-    
+ 
+    @Option( option = 'only', description = 'Only build this repo' )
+    void setBuildOnly( final Boolean ignreVal) {
+       onlyBuild = true
+    }
 
     def doBuild() {
         project.exec {
@@ -48,7 +60,6 @@ abstract class TridentBuild extends DefaultTask {
         }
     }
 }
-
 
 task mybuild(type: TridentBuild) {
   description 'Builds controlpath by invoking build.sh'
