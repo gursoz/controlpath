@@ -1,71 +1,44 @@
+import com.parent.TridentBuild
+
 project.defaultTasks 'mybuild'
 
-dependencies  {
-  files('/home/cyc/Test/learngit/gitmodule/parentrepo/bedrock/output/buildTime')
-}
+@CacheableTask    
+abstract class ControlpathBuild extends TridentBuild {
+  Boolean forceBuild = null
 
-task myprebuild {
-  inputs.files('/home/cyc/Test/learngit/gitmodule/parentrepo/bedrock/src/')
-  doLast {
-    mybuild.enabled = true
+  @InputDirectory
+  abstract DirectoryProperty getBedrockSrcDir()
+
+
+  public void doBuild() {
+     project.exec {
+        workingDir '.'
+        commandLine './build/build.sh'
+     }
   }
-}
-    
 
-@CacheableTask
-abstract class TridentBuild extends DefaultTask {
-   Boolean forceBuild = null
+  @Option( option = 'force', description = 'Build even if not stale in cache. Will force build only this repo')
+  void setForceBuild(final Boolean ignoreVal) {
+     forceBuild = true
+  }
 
-   // The actual action to perform the build
-    @TaskAction
-    void build() {
-        doBuild()
-    }
+  Map<String,String> getInputProperties() {
+     def inputMap = [:]
+     if(forceBuild==true) {
+        inputMap['timestamp'] = LocalDateTime.now().toString()
+     }
+     return inputMap
+  }
 
-    @Input
-    Map<String,String> getInputProperties() {
-       def inputMap = [:]
-       if(forceBuild==true) {
-          inputMap['timestamp'] = LocalDateTime.now().toString()
-       }
-       return inputMap
-    }
-
-    @InputDirectory
-    abstract DirectoryProperty getSrcInputDir()
-
-    @InputDirectory
-    abstract DirectoryProperty getBedrockSrcDir()
-
-    @InputDirectory
-    abstract DirectoryProperty getTestInputDir()
-
-    @OutputDirectory
-    abstract DirectoryProperty getOutputDir()
-
-    @Option( option = 'force', description = 'Build even if not stale in cache. Will force build only this repo')
-    void setForceBuild(final Boolean ignoreVal) {
-       forceBuild = true
-    }
- 
-    @Option( option = 'only', description = 'Only build this repo' )
-    void setBuildOnly( final Boolean ignreVal) {
-       onlyBuild = true
-    }
-
-    def doBuild() {
-        project.exec {
-          workingDir '.'
-	  commandLine './build/build.sh'
-        }
-    }
 }
 
-task mybuild(type: TridentBuild) {
-  description 'Builds controlpath by invoking build.sh'
-  dependsOn ':bedrock:mybuild'
-  srcInputDir = file('/home/cyc/Test/learngit/gitmodule/parentrepo/controlpath/src/main/java/com/dell/controlpath')
-  testInputDir = file('/home/cyc/Test/learngit/gitmodule/parentrepo/controlpath/src/test/java/com/dell/controlpath')
-  bedrockSrcDir = file('/home/cyc/Test/learngit/gitmodule/parentrepo/bedrock/src/')
-  outputDir = file('./output')
+task mybuild(type: ControlpathBuild) {
+    srcDir = file('/home/cyc/Test/learngit/gitmodule/parentrepo/controlpath/src')
+    bedrockSrcDir = file('/home/cyc/Test/learngit/gitmodule/parentrepo/bedrock/src/')
+    outputDir = file('./output')
+    dependsOn ':bedrock:mybuild' 
+   
 }
+
+
+
