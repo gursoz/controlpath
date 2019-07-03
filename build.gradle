@@ -4,7 +4,6 @@ project.defaultTasks 'mybuild'
 
 @CacheableTask    
 abstract class ControlpathBuild extends TridentBuild {
-  Boolean forceBuild = null
 
   @InputDirectory
   abstract DirectoryProperty getBedrockSrcDir()
@@ -15,19 +14,6 @@ abstract class ControlpathBuild extends TridentBuild {
         workingDir '.'
         commandLine './build/build.sh'
      }
-  }
-
-  @Option( option = 'force', description = 'Build even if not stale in cache. Will force build only this repo')
-  void setForceBuild(final Boolean ignoreVal) {
-     forceBuild = true
-  }
-
-  Map<String,String> getInputProperties() {
-     def inputMap = [:]
-     if(forceBuild==true) {
-        inputMap['timestamp'] = LocalDateTime.now().toString()
-     }
-     return inputMap
   }
 
 }
